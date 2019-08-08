@@ -11,14 +11,13 @@ uid = cfg.server['uid']
 pwd = cfg.server['pwd']
 
 con_string = f'DRIVER={driver};SERVER={server};UID={uid};PWD={pwd};DATABASE={database};'
-
 print(con_string)
 
 
 def run_get_styles():
     cnxn = pyodbc.connect(con_string)
     print('connected')
-    sql = """SET NOCOUNT ON;
+    sql = """set nocount on
         select 
         TB_SKU_LOOKUPS.lookup as upc,
         TB_STYLES.STYLE AS STYLE,
@@ -35,7 +34,20 @@ def run_get_styles():
         tb_taxonomy.SUBTYP_1 as Sub1,
         tb_taxonomy.SUBTYP_2 as sub2,
         tb_taxonomy.SUBTYP_3 as sub3, 
-        TB_SKU_BUCKETS.STORE_ID as store
+        /* TB_TAX_CODES.TAX_CODE_LABEL, */
+        CASE TB_TAX_CODES.TAX_CODE_LABEL
+            WHEN null then 'No'
+            else 'Yes' END as Taxable,
+        /* TB_STYLES.NON_INVT as 'Item Type', */
+        case TB_STYLES.NON_INVT 
+            when 'N' then 'Single'
+            else 'Non-inventory' END as 'Item Type',
+        /* TB_STYLES.MUST_SERIAL, */
+        case tb_styles.MUST_SERIAL
+            when null then 'Yes'
+            else null END as 'Serialized',
+        TB_CONTACTS.COMPANY AS 'VENDOR',  
+        TB_PARTS.PART_NUM AS 'VENDOR ID'
         from TB_SKU_LOOKUPS
         inner join TB_SKUS on TB_SKU_LOOKUPS.SKU_ID = TB_SKUS.SKU_ID
         inner join TB_STYLES on TB_SKUS.style_ID = tb_styles.STYLE_ID
@@ -44,9 +56,14 @@ def run_get_styles():
         left join TB_SIZE_ENTRIES on TB_SKUS.SCALE_ENTRY_ID = TB_SIZE_ENTRIES.SCALE_ENTRY_ID
         inner join TB_SKU_BUCKETS on TB_SKUS.SKU_ID = TB_SKU_BUCKETS.SKU_ID
         inner join TB_TAXONOMY on TB_STYLES.TAXONOMY_ID = TB_TAXONOMY.TAXONOMY_ID
+        LEFT join TB_TAX_CODES ON TB_STYLES.TAX_CODE_ID = TB_TAX_CODES.TAX_CODE_ID
+        LEFT JOIN TB_PARTS ON TB_PARTS.STYLE_ID = TB_STYLES.STYLE_ID
+        LEFT JOIN TB_CONTACTS ON TB_CONTACTS.CONTACT_ID = TB_PARTS.CONTACT_ID
         where TB_SKU_LOOKUPS.PRIME = 'Y'
-        and
-        (tb_sku_buckets.qoh > 0 or tb_sku_buckets.qoo > 0)
+        and 
+        TB_SKU_BUCKETS.STORE_ID = '1'
+        AND 
+        (CONVERT(DATE,TB_STYLES.DLU) > CONVERT(DATE, GETDATE()-365) OR TB_SKU_BUCKETS.QOH != 0)
         ORDER BY
         TB_STYLES.STYLE,
         tb_sku_buckets.store_id
@@ -57,6 +74,5 @@ def run_get_styles():
 
     # return df_data
     df_data.to_csv('styles_to_parse.csv', index=False)
-
 
 run_get_styles()

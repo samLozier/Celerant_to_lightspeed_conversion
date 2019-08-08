@@ -22,7 +22,7 @@ def attributes(rows):
 
 def check_variables(matrix_style):  # get input df_view df_this_style['attr1', 'attr3', 'size]
     keep = ['upc', 'STYLE', 'brand', 'Description', 'cost', 'Suggested', 'price', 'dept', 'type', 'Sub1', 'sub2',
-            'sub3', 'store']
+            'sub3', 'Taxable', 'Item Type', 'Serialized', 'VENDOR', 'VENDOR ID']
     matrix_style_output = matrix_style[keep].join(
         pd.DataFrame(matrix_style.drop(columns=keep).apply(attributes, axis=1).tolist()))
 
@@ -54,7 +54,26 @@ for unique_style in df_unique_styles:  # find unique styles from the full datase
         if df_this_style[['Attr1', 'Attr2', 'Size']].isna().values.all():
             lookup_type, lookup = check_upc(df_this_style['upc'].values[0])  # single line, so series access, not key
 
+        if df_this_style['Taxable'].values[0] == 'Yes':
+            tax_class = 'Item'
+        else:
+            tax_class = 'Food and Permits'
             # commented dictionary keys in newline are for fields I haven't pulled in the query yet.
+
+        if df_this_style['VENDOR'].values[0] is not None:
+            vendor = df_this_style['VENDOR'].values[0]
+        else:
+            vendor = ''
+
+        if df_this_style['VENDOR ID'].values[0] is not None:
+            vendor_id = df_this_style['VENDOR ID'].values[0]
+        else:
+            vendor_id = ''
+
+        if df_this_style['Serialized'].values[0] is not None:
+            serialized = 'Yes'
+        else:
+            serialized = 'No'
 
             newline = {
                 lookup_type: lookup,
@@ -64,23 +83,29 @@ for unique_style in df_unique_styles:  # find unique styles from the full datase
                 'MSRP': df_this_style['Suggested'].values[0],
                 'Default Cost': df_this_style['cost'].values[0],
                 'Price': df_this_style['price'].values[0],
-                # 'Tax':
-                # 'Tax Class':
-                # 'Item Type':
-                # 'Clear Existing Tags': 'No'
+                'Taxable': df_this_style['Taxable'].values[0],
+                'Tax Class': tax_class,
+                'Item Type': df_this_style['Item Type'].values[0],
                 'Category': df_this_style['dept'].values[0],
                 'Sub Category': df_this_style['type'].values[0],
                 'Sub Category 2': df_this_style['Sub1'].values[0],
                 'Sub Category 3': df_this_style['sub2'].values[0],
-                'Tags': df_this_style['sub3'].values[0],
-                # 'Vendor':
-                # 'Vendor ID/ Part Number':
-                # 'Non Inventory Item': Yes/No
+                'Sub Category 4': df_this_style['sub3'].values[0],
+                'Clear Existing Tags': 'No',
+                'Add Tags': '',
+                'Note': '',
+                'Display Note': '',
+                'Archive': '',
+                'Featured Image': '',
+                'Image': '',
+                'Vendor': vendor,
+                'Vendor ID/ Part Number': vendor_id,
+                'Non Inventory Item': df_this_style['Item Type'].values[0],
                 'Manufacturer': df_this_style['brand'].values[0],
-                # 'Serialized Item': yes/no
+                'Serialized Item': serialized
             }
+            print(newline)
             output.append(newline)
-            # print(newline)
 
     else:  # has more than one row
         df_this_style.reset_index(drop=True, inplace=True)
@@ -109,6 +134,27 @@ for unique_style in df_unique_styles:  # find unique styles from the full datase
             except:
                 attr3 = ''
 
+            if df_this_style['Taxable'].values[i] == 'Yes':
+                tax_class = 'Item'
+            else:
+                tax_class = 'Food and Permits'
+                # commented dictionary keys in newline are for fields I haven't pulled in the query yet.
+
+            if df_this_style['VENDOR'].values[i] is not None:
+                vendor = df_this_style['VENDOR'].values[i]
+            else:
+                vendor = ''
+
+            if df_this_style['VENDOR ID'].values[i] is not None:
+                vendor_id = df_this_style['VENDOR ID'].values[i]
+            else:
+                vendor_id = ''
+
+            if df_this_style['Serialized'].values[i] is not None:
+                serialized = 'Yes'
+            else:
+                serialized = 'No'
+
             newline = {
                 lookup_type: lookup,
                 'Manufacturer SKU': df_new_this_style['STYLE'].values[i],
@@ -117,14 +163,11 @@ for unique_style in df_unique_styles:  # find unique styles from the full datase
                 'MSRP': df_new_this_style['Suggested'].values[i],
                 'Default Cost': df_new_this_style['cost'].values[i],
                 'Price': df_new_this_style['price'].values[i],
-                # 'Tax':
-                # 'Tax Class':
-                # 'Item Type':
-                # 'Clear Existing Tags': 'No'
+                'Taxable': df_this_style['Taxable'].values[i],
+                'Tax Class': tax_class,
+                'Item Type': df_this_style['Item Type'].values[i],
+                'Clear Existing Tags': 'No',
                 'Matrix Attribute Set': df_new_this_style['Attributeset'].values[i],
-                # 'Attribute 1': df_new_this_style['Attr1'].values[0],
-                # 'Attribute 2': df_new_this_style['Attr2'].values[0],
-                # 'Attribute 3': df_new_this_style['Attr3'].values[0],
                 'Attribute 1': attr1,
                 'Attribute 2': attr2,
                 'Attribute 3': attr3,
@@ -133,13 +176,13 @@ for unique_style in df_unique_styles:  # find unique styles from the full datase
                 'Sub Category 2': df_new_this_style['Sub1'].values[i],
                 'Sub Category 3': df_new_this_style['sub2'].values[i],
                 'Tags': df_new_this_style['sub3'].values[i],
-                # 'Vendor':
-                # 'Vendor ID/ Part Number':
-                # 'Non Inventory Item': Yes/No
+                'Vendor': vendor,
+                'Vendor ID/ Part Number': vendor_id,
+                'Non Inventory Item': df_this_style['Item Type'].values[i],
                 'Manufacturer': df_new_this_style['brand'].values[i],
-                # 'Serialized Item': yes/no
+                'Serialized Item': serialized
             }
-            # print(newline)
+            print(newline)
             output.append(newline)
 
 df_final_frame = pd.DataFrame(output)
