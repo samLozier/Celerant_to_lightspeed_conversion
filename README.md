@@ -5,3 +5,4 @@ This is a script for extracting product data from Celerant database and reformat
 I have no plans to update this after I'm done using it, but it took a while to setup and might save another business some hassle. This assmes you're running Celerant Point of Sale and are switching to Lightspeed Retail. 
 
 Obviously, check your work and use at your own risk. 
+

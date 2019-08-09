@@ -50,6 +50,7 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
     df_this_style = df_styles.loc[df_styles['STYLE'] == unique_style]  # return a df for each set of skus in a style
 
     if len(df_this_style) == 1:  # find styles with only one row
+
         if df_this_style[['Attr1', 'Attr2', 'Size']].isna().values.all():
             lookup_type, lookup = check_upc(df_this_style['upc'].values[0])  # single line, so series access, not key
 
@@ -86,10 +87,10 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
                 'Tax Class': tax_class,
                 'Item Type': df_this_style['Item Type'].values[0],
                 'Category': df_this_style['dept'].values[0],
-                'Sub Category': df_this_style['type'].values[0],
-                'Sub Category 2': df_this_style['Sub1'].values[0],
-                'Sub Category 3': df_this_style['sub2'].values[0],
-                'Sub Category 4': df_this_style['sub3'].values[0],
+                'Subcategory 1': df_this_style['type'].values[0],
+                'Subcategory 2': df_this_style['Sub1'].values[0],
+                'Subcategory 3': df_this_style['sub2'].values[0],
+                'Subcategory 4': df_this_style['sub3'].values[0],
                 'Clear Existing Tags': 'No',
                 'Add Tags': '',
                 'Note': '',
@@ -98,12 +99,11 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
                 'Featured Image': '',
                 'Image': '',
                 'Vendor': vendor,
-                'Vendor ID/ Part Number': vendor_id,
+                'Vendor ID': vendor_id,
                 'Non Inventory Item': df_this_style['Item Type'].values[0],
-                'Manufacturer': df_this_style['brand'].values[0],
-                'Serialized Item': serialized,
+                'Brand': df_this_style['brand'].values[0],
+                'Serialized': serialized,
                 'Discountable': 'Yes',
-                'Add Tags': ''
             }
             output.append(newline)
 
@@ -166,30 +166,43 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
                 'Attribute 2': attr2,
                 'Attribute 3': attr3,
                 'Category': df_new_this_style['dept'].values[i],
-                'Sub Category': df_new_this_style['type'].values[i],
-                'Sub Category 2': df_new_this_style['Sub1'].values[i],
-                'Sub Category 3': df_new_this_style['sub2'].values[i],
-                'Sub Category 4': df_new_this_style['sub3'].values[i],
+                'Subcategory 1': df_new_this_style['type'].values[i],
+                'Subcategory 2': df_new_this_style['Sub1'].values[i],
+                'Subcategory 3': df_new_this_style['sub2'].values[i],
+                'Subcategory 4': df_new_this_style['sub3'].values[i],
                 'Vendor': vendor,
-                'Vendor ID/ Part Number': vendor_id,
+                'Vendor ID': vendor_id,
                 'Non Inventory Item': df_this_style['Item Type'].values[i],
-                'Manufacturer': df_new_this_style['brand'].values[i],
-                'Serialized Item': serialized,
+                'Brand': df_new_this_style['brand'].values[i],
+                'Serialized': serialized,
                 'Discountable': 'Yes',
                 'Add Tags': ''
             }
             output.append(newline)
 
 df_final_frame = pd.DataFrame(output)
-df_final_frame = df_final_frame['Description', 'UPC', 'EAN', 'Custom SKU', 'Manufacturer SKU', 'Vendor', 'Vendor ID',
-                                'Brand', 'Default Cost', 'Default - Price', 'MSRP - Price', 'Matrix Description',
-                                'Matrix Attribute Set', 'Attribute 1', 'Attribute 2', 'Attribute 3', 'Discountable', 'Taxable',
-                                'Tax Class', 'Item Type', 'Serialized', 'Category', 'Subcategory 1', 'Subcategory 2',
-                                'Subcategory 3', 'Subcategory 4', 'Clear Existing Tags', 'Add Tags', 'Note',
-                                'Display Note', 'Archive']
+
+# print('Columns', list(df_final_frame.columns.values))
+
+# df_final_frame = df_final_frame['Description', 'UPC', 'EAN', 'Custom SKU', 'Manufacturer SKU', 'Vendor', 'Vendor ID',
+#                                 'Brand', 'Default Cost', 'Default - Price', 'MSRP - Price', 'Matrix Description',
+#                                 'Matrix Attribute Set', 'Attribute 1', 'Attribute 2', 'Attribute 3', 'Discountable', 'Taxable',
+#                                 'Tax Class', 'Item Type', 'Serialized', 'Category', 'Subcategory 1', 'Subcategory 2',
+#                                 'Subcategory 3', 'Subcategory 4', 'Clear Existing Tags', 'Add Tags']
+
+
+df_final_frame = df_final_frame[
+    ['Description', 'UPC', 'EAN', 'Custom SKU', 'Manufacturer SKU', 'Vendor', 'Vendor ID', 'Brand', 'Default Cost',
+     'Default - Price', 'MSRP - Price', 'Matrix Description', 'Matrix Attribute Set', 'Attribute 1', 'Attribute 2',
+     'Attribute 3', 'Discountable', 'Taxable', 'Tax Class', 'Item Type', 'Serialized', 'Category', 'Subcategory 1',
+     'Subcategory 2', 'Subcategory 3', 'Subcategory 4', 'Clear Existing Tags', 'Add Tags', 'Note', 'Display Note',
+     'Archive', ]]
+
+
+
 print('Starting Length: ', starting_length,
       'Starting Unique Count: ', starting_unique_count,
       'Ending Length: ', len(df_final_frame),
-      'Ending Unique Count: ', df_final_frame['Manufacturer SKU'].unique().tolist()
+      'Ending Unique Count: ', len(df_final_frame['Manufacturer SKU'].unique().tolist())
       )
 df_final_frame.to_csv('final_frame_test.csv', index=False)
