@@ -49,63 +49,64 @@ output = []  # to be used for creating the final export dataframe
 for unique_style in tqdm(df_unique_styles):  # find unique styles from the full dataset
     df_this_style = df_styles.loc[df_styles['STYLE'] == unique_style]  # return a df for each set of skus in a style
 
-    if len(df_this_style) == 1:  # find styles with only one row
+    if len(df_this_style) == 1 and df_this_style[
+        ['Attr1', 'Attr2', 'Size']].isna().values.all():  # find styles with only one row
 
-        if df_this_style[['Attr1', 'Attr2', 'Size']].isna().values.all():
-            lookup_type, lookup = check_upc(df_this_style['upc'].values[0])  # single line, so series access, not key
+        # if df_this_style[['Attr1', 'Attr2', 'Size']].isna().values.all():
+        lookup_type, lookup = check_upc(df_this_style['upc'].values[0])  # single line, so series access, not key
 
-            if df_this_style['Taxable'].values[0] == 'Yes':
-                tax_class = 'Item'
-            else:
-                tax_class = 'Food and Permits'
-                # commented dictionary keys in newline are for fields I haven't pulled in the query yet.
+        if df_this_style['Taxable'].values[0] == 'Yes':
+            tax_class = 'Item'
+        else:
+            tax_class = 'Food and Permits'
+            # commented dictionary keys in newline are for fields I haven't pulled in the query yet.
 
-            if df_this_style['VENDOR'].values[0] is not None:
-                vendor = df_this_style['VENDOR'].values[0]
-            else:
-                vendor = ''
+        if df_this_style['VENDOR'].values[0] is not None:
+            vendor = df_this_style['VENDOR'].values[0]
+        else:
+            vendor = ''
 
-            if df_this_style['VENDOR ID'].values[0] is not None:
-                vendor_id = df_this_style['VENDOR ID'].values[0]
-            else:
-                vendor_id = ''
+        if df_this_style['VENDOR ID'].values[0] is not None:
+            vendor_id = df_this_style['VENDOR ID'].values[0]
+        else:
+            vendor_id = ''
 
-            if df_this_style['Serialized'].values[0] is not None:
-                serialized = 'Yes'
-            else:
-                serialized = 'No'
+        if df_this_style['Serialized'].values[0] is not None:
+            serialized = 'Yes'
+        else:
+            serialized = 'No'
 
-            newline = {
-                lookup_type: lookup,
-                'Manufacturer SKU': df_this_style['STYLE'].values[0],
-                'Description': df_this_style['Description'].values[0],  # use "matrix description for Matrix"
-                'Quantity On Hand': 0,
-                'MSRP - Price': df_this_style['Suggested'].values[0],
-                'Default Cost': df_this_style['cost'].values[0],
-                'Default - Price': df_this_style['price'].values[0],
-                'Taxable': df_this_style['Taxable'].values[0],
-                'Tax Class': tax_class,
-                'Item Type': df_this_style['Item Type'].values[0],
-                'Category': df_this_style['dept'].values[0],
-                'Subcategory 1': df_this_style['type'].values[0],
-                'Subcategory 2': df_this_style['Sub1'].values[0],
-                'Subcategory 3': df_this_style['sub2'].values[0],
-                'Subcategory 4': df_this_style['sub3'].values[0],
-                'Clear Existing Tags': 'No',
-                'Add Tags': '',
-                'Note': '',
-                'Display Note': '',
-                'Archive': '',
-                'Featured Image': '',
-                'Image': '',
-                'Vendor': vendor,
-                'Vendor ID': vendor_id,
-                'Non Inventory Item': df_this_style['Item Type'].values[0],
-                'Brand': df_this_style['brand'].values[0],
-                'Serialized': serialized,
-                'Discountable': 'Yes',
-            }
-            output.append(newline)
+        newline = {
+            lookup_type: lookup,
+            'Manufacturer SKU': df_this_style['STYLE'].values[0],
+            'Description': df_this_style['Description'].values[0],  # use "matrix description for Matrix"
+            'Quantity On Hand': 0,
+            'MSRP - Price': df_this_style['Suggested'].values[0],
+            'Default Cost': df_this_style['cost'].values[0],
+            'Default - Price': df_this_style['price'].values[0],
+            'Taxable': df_this_style['Taxable'].values[0],
+            'Tax Class': tax_class,
+            'Item Type': df_this_style['Item Type'].values[0],
+            'Category': df_this_style['dept'].values[0],
+            'Subcategory 1': df_this_style['type'].values[0],
+            'Subcategory 2': df_this_style['Sub1'].values[0],
+            'Subcategory 3': df_this_style['sub2'].values[0],
+            'Subcategory 4': df_this_style['sub3'].values[0],
+            'Clear Existing Tags': 'No',
+            'Add Tags': '',
+            'Note': '',
+            'Display Note': '',
+            'Archive': '',
+            'Featured Image': '',
+            'Image': '',
+            'Vendor': vendor,
+            'Vendor ID': vendor_id,
+            'Non Inventory Item': df_this_style['Item Type'].values[0],
+            'Brand': df_this_style['brand'].values[0],
+            'Serialized': serialized,
+            'Discountable': 'Yes',
+        }
+        output.append(newline)
 
     else:  # has more than one row
         df_this_style.reset_index(drop=True, inplace=True)
@@ -205,4 +206,4 @@ print('Starting Length: ', starting_length,
       'Ending Length: ', len(df_final_frame),
       'Ending Unique Count: ', len(df_final_frame['Manufacturer SKU'].unique().tolist())
       )
-df_final_frame.to_csv('final_frame_test.csv', index=False)
+df_final_frame.to_csv('final_frame.csv', index=False)
