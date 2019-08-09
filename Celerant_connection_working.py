@@ -44,8 +44,8 @@ def run_get_styles():
             else 'Non-inventory' END as 'Item Type',
         /* TB_STYLES.MUST_SERIAL, */
         case tb_styles.MUST_SERIAL
-            when null then 'Yes'
-            else null END as 'Serialized',
+            when 'Y' then 'Yes'
+            else 'NO' END as 'Serialized',
         TB_CONTACTS.COMPANY AS 'VENDOR',  
         TB_PARTS.PART_NUM AS 'VENDOR ID'
         from TB_SKU_LOOKUPS

@@ -162,7 +162,7 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
                 'Tax Class': tax_class,
                 'Item Type': df_this_style['Item Type'].values[i],
                 'Clear Existing Tags': 'No',
-                'Matrix Attribute Set': df_new_this_style['Attributeset'].values[i],
+                'Matrix Attribute Set': df_new_this_style['Attributeset'].values[i].replace('Attr1', 'Color'),
                 'Attribute 1': attr1,
                 'Attribute 2': attr2,
                 'Attribute 3': attr3,
