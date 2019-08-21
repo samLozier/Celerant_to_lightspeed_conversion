@@ -63,7 +63,7 @@ def run_get_styles():
         and 
         TB_SKU_BUCKETS.STORE_ID = '1'
         AND 
-        (CONVERT(DATE,TB_STYLES.DLU) > CONVERT(DATE, GETDATE()-365) OR TB_SKU_BUCKETS.QOH != 0)
+        (CONVERT(DATE,TB_STYLES.DLU) > CONVERT(DATE, GETDATE()-270) OR TB_SKU_BUCKETS.QOH != 0)
         ORDER BY
         TB_STYLES.STYLE,
         tb_sku_buckets.store_id
@@ -74,5 +74,6 @@ def run_get_styles():
 
     # return df_data
     df_data.to_csv('styles_to_parse.csv', index=False)
+
 
 run_get_styles()

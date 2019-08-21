@@ -71,7 +71,7 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
         else:
             vendor_id = ''
 
-        if df_this_style['Serialized'].values[0] is not None:
+        if df_this_style['Serialized'].values[0] is 'Yes':
             serialized = 'Yes'
         else:
             serialized = 'No'
@@ -129,23 +129,23 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
             except:
                 attr3 = ''
 
-            if df_this_style['Taxable'].values[i] == 'Yes':
+            if df_new_this_style['Taxable'].values[i] == 'Yes':
                 tax_class = 'Item'
             else:
                 tax_class = 'Food and Permits'
                 # commented dictionary keys in newline are for fields I haven't pulled in the query yet.
 
-            if df_this_style['VENDOR'].values[i] is not None:
+            if df_new_this_style['VENDOR'].values[i] is not None:
                 vendor = df_this_style['VENDOR'].values[i]
             else:
                 vendor = ''
 
-            if df_this_style['VENDOR ID'].values[i] is not None:
+            if df_new_this_style['VENDOR ID'].values[i] is not None:
                 vendor_id = df_this_style['VENDOR ID'].values[i]
             else:
                 vendor_id = ''
 
-            if df_this_style['Serialized'].values[i] is not None:
+            if df_new_this_style['Serialized'].values[i] is 'Yes':
                 serialized = 'Yes'
             else:
                 serialized = 'No'
@@ -158,9 +158,9 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
                 'MSRP - Price': df_new_this_style['Suggested'].values[i],
                 'Default Cost': df_new_this_style['cost'].values[i],
                 'Default - Price': df_new_this_style['price'].values[i],
-                'Taxable': df_this_style['Taxable'].values[i],
+                'Taxable': df_new_this_style['Taxable'].values[i],
                 'Tax Class': tax_class,
-                'Item Type': df_this_style['Item Type'].values[i],
+                'Item Type': df_new_this_style['Item Type'].values[i],
                 'Clear Existing Tags': 'No',
                 'Matrix Attribute Set': df_new_this_style['Attributeset'].values[i].replace('Attr1', 'Color'),
                 'Attribute 1': attr1,
@@ -173,7 +173,7 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
                 'Subcategory 4': df_new_this_style['sub3'].values[i],
                 'Vendor': vendor,
                 'Vendor ID': vendor_id,
-                'Non Inventory Item': df_this_style['Item Type'].values[i],
+                'Non Inventory Item': df_new_this_style['Item Type'].values[i],
                 'Brand': df_new_this_style['brand'].values[i],
                 'Serialized': serialized,
                 'Discountable': 'Yes',
@@ -182,15 +182,6 @@ for unique_style in tqdm(df_unique_styles):  # find unique styles from the full 
             output.append(newline)
 
 df_final_frame = pd.DataFrame(output)
-
-# print('Columns', list(df_final_frame.columns.values))
-
-# df_final_frame = df_final_frame['Description', 'UPC', 'EAN', 'Custom SKU', 'Manufacturer SKU', 'Vendor', 'Vendor ID',
-#                                 'Brand', 'Default Cost', 'Default - Price', 'MSRP - Price', 'Matrix Description',
-#                                 'Matrix Attribute Set', 'Attribute 1', 'Attribute 2', 'Attribute 3', 'Discountable', 'Taxable',
-#                                 'Tax Class', 'Item Type', 'Serialized', 'Category', 'Subcategory 1', 'Subcategory 2',
-#                                 'Subcategory 3', 'Subcategory 4', 'Clear Existing Tags', 'Add Tags']
-
 
 df_final_frame = df_final_frame[
     ['Description', 'UPC', 'EAN', 'Custom SKU', 'Manufacturer SKU', 'Vendor', 'Vendor ID', 'Brand', 'Default Cost',
@@ -206,4 +197,4 @@ print('Starting Length: ', starting_length,
       'Ending Length: ', len(df_final_frame),
       'Ending Unique Count: ', len(df_final_frame['Manufacturer SKU'].unique().tolist())
       )
-df_final_frame.to_csv('final_frame.csv', index=False)
+df_final_frame.to_excel('Lightspeed_Upload.xlsx', index=False)
