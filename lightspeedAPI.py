@@ -29,5 +29,5 @@ print(r.json())
 data = r.json()
 
 # creates credentials file with json response
-with open('credentials.json', 'a') as outfile:
+with open('store_credentials.json', 'a') as outfile:
     json.dump(data, outfile, indent=4)
